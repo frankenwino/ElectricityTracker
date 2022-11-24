@@ -290,4 +290,4 @@ e = ElTracker(
     region_zone="SE3",
     base_url="https://www.nordpoolgroup.com/en/Market-data1/Dayahead/Area-Prices/SE"
 )
-e.main()
+e.main(check_website=True)
