@@ -7,7 +7,7 @@ def create_database():
 
 db_file_path = pathlib.Path(__file__).parent.joinpath("electricity.db")
 # engine = db.create_engine("sqlite:///electricity.db")
-engine = db.create_engine(f"sqlite:///{db_file_path}")
+engine = db.create_engine(f"sqlite:///{str(db_file_path)}")
 connection = engine.connect()
 metadata = db.MetaData()
 day_ahead = db.Table(
@@ -35,11 +35,11 @@ def latest_price_data():
 
 
 if __name__ == "__main__":
-    # create_database()
+    create_database()
     # print(current_date_start_hour())
     
     # query = db.select([day_ahead.columns.date, day_ahead.columns.start_hour, day_ahead.columns.end_hour, day_ahead.columns.sek_per_kwh]).where(day_ahead.columns.date_start_hour >= current_date_start_hour())
     # ResultProxy = connection.execute(query)
     # ResultSet = ResultProxy.fetchall()
-    lpd = latest_price_data()
-    print(lpd[0].start_hour)
+    # lpd = latest_price_data()
+    # print(lpd[0].start_hour)
