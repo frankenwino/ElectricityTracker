@@ -15,7 +15,7 @@ import database
 import sqlalchemy
 
 class ElTracker:
-    def __init__(self, region_zone: str, base_url: str) -> None:
+    def __init__(self, region_zone: str, base_url: str, hide_browser: bool = False) -> None:
         self.base_url = base_url
         self.hourly_url = f"{self.base_url}/Hourly"
         self.daily_url = f"{self.base_url}/Hourly1"
@@ -23,6 +23,7 @@ class ElTracker:
         self.monthly_url = f"{self.base_url}/Monthly"
         self.region_zone = region_zone
         self.temp_html_file = pathlib.Path(__file__).parent.joinpath("table.html")
+        self.headless_browser = hide_browser
 
     def html_to_soup(self, html: str) -> BeautifulSoup:
         """html_to_soup converts HTML string into a BeautifulSoup object
@@ -37,7 +38,7 @@ class ElTracker:
 
         return soup
 
-    def selenium_driver(self, headless: bool = False) -> webdriver.Firefox:
+    def selenium_driver(self) -> webdriver.Firefox:
         """selenium_driver creates a Selenium webdriver object.
 
         Args:
@@ -46,11 +47,18 @@ class ElTracker:
         Returns:
             webdriver.Firefox: a Selenium webdriver object.
         """
-        service = FirefoxService(executable_path=GeckoDriverManager().install())
+        
+        geckodriver_binary = pathlib.Path(__file__).parent.joinpath("geckodriver").joinpath("geckodriver")
+        if geckodriver_binary.is_file():
+            service = FirefoxService(executable_path=geckodriver_binary)
+        else:
+            service = FirefoxService(executable_path=GeckoDriverManager().install())
+        
 
         # Set headless option
         options = Options()
-        options.headless = headless
+        options.headless = self.headless_browser
+        utils.print_message(f"Hide browser: {self.headless_browser}")
 
         # Initialise selenium driver
         driver = webdriver.Firefox(service=service, options=options)
@@ -147,10 +155,11 @@ class ElTracker:
                 utils.print_message("Today's data is not available yet")
 
         else:
-            utils.print_message("Did not get table data ")
+            utils.print_message("Did not get table data")
 
         # input("Enter to close browser...")
         driver.close()
+        utils.print_message("Browser closed")
 
         return soup_html
 
@@ -202,7 +211,7 @@ class ElTracker:
         # Looks like region/data you want is available ie SE3 and tomorrow's data
         if region_zone_confirmed and column_header_date_confirmed_as_tomorrow:
             utils.print_message("Getting table data")
-
+            new_data_added_to_db = False
             # Do get table data
             table_body = soup.find("tbody")
             table_rows = table_body.find_all("tr")
@@ -242,11 +251,17 @@ class ElTracker:
                             # Add data to database
                             database.connection.execute(query)
                             utils.print_message(f"Added {date_start_hour} prices to DB")
+                            new_data_added_to_db = True
                         except sqlalchemy.exc.IntegrityError as e:
-                            utils.print_message(f"{type(e)} - {str(e)}")
+                            pass
+                            # utils.print_message(f"{type(e)} - {str(e)}")
                     except (ValueError, IndexError):
                         pass
                         # print(f"{column1} - kWh: {kilowatt_hour}")
+            if new_data_added_to_db:
+                utils.print_message(f"DB update complete")
+            else:
+                utils.print_message(f"No new price data added to DB")
         
         # Looks like region/data you want is NOT available ie SE3 and tomorrow's data
         else:
@@ -288,6 +303,7 @@ class ElTracker:
 
 e = ElTracker(
     region_zone="SE3",
-    base_url="https://www.nordpoolgroup.com/en/Market-data1/Dayahead/Area-Prices/SE"
+    base_url="https://www.nordpoolgroup.com/en/Market-data1/Dayahead/Area-Prices/SE",
+    hide_browser=True
 )
 e.main(check_website=True)
