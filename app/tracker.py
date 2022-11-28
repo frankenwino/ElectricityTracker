@@ -22,7 +22,8 @@ class ElTracker:
         self.weekly_url = f"{self.base_url}/Weekly"
         self.monthly_url = f"{self.base_url}/Monthly"
         self.region_zone = region_zone
-        self.temp_html_file = pathlib.Path(__file__).parent.joinpath("table.html")
+        self.temp_html_file_path = pathlib.Path(__file__).parent.joinpath(utils.tomorrow_year()).joinpath(utils.tomorrow_month())
+        self.temp_html_file = self.temp_html_file_path.joinpath(f"{utils.tomorrow()}_{self.region_zone}_table.html")
         self.headless_browser = hide_browser
 
     def html_to_soup(self, html: str) -> BeautifulSoup:
@@ -149,13 +150,14 @@ class ElTracker:
                 soup = soup.prettify()
                 soup_html = str(soup)
 
+                self.temp_html_file_path.mkdir(parents=True, exist_ok=True)
                 with open(self.temp_html_file, "w") as f:
                     f.write(soup_html)
             else:
                 utils.print_message("Today's data is not available yet")
 
         else:
-            utils.print_message("Did not get table data")
+            utils.print_message("Did not get table data. mWh text not confirmed.")
 
         # input("Enter to close browser...")
         driver.close()
@@ -304,6 +306,6 @@ class ElTracker:
 e = ElTracker(
     region_zone="SE3",
     base_url="https://www.nordpoolgroup.com/en/Market-data1/Dayahead/Area-Prices/SE",
-    hide_browser=True
+    hide_browser=False
 )
 e.main(check_website=True)
