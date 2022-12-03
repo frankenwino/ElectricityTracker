@@ -13,6 +13,7 @@ import unicodedata
 from datetime import date, datetime, timedelta
 import database
 import sqlalchemy
+import charts
 
 class ElTracker:
     def __init__(self, region_zone: str, base_url: str, hide_browser: bool = False) -> None:
@@ -301,6 +302,7 @@ class ElTracker:
             hourly_data_html = self.get_hourly_data_html()
             
         table_soup = self.parse_table_html(html=hourly_data_html)
+        charts.create_chart()
 
 
 e = ElTracker(
