@@ -68,7 +68,7 @@ def data_from_now():
 
 
 def create_chart():
-    chart_file_path = pathlib.Path(__file__).parent.joinpath("day_ahead_chart.png")
+    # chart_file_path = pathlib.Path(__file__).parent.joinpath("day_ahead_chart.png")
     dates, start_hours, price = data_from_now()
 
     start_hours_text = []
@@ -96,6 +96,11 @@ def create_chart():
     utils.print_message(f"Created day ahead chart {chart_file_path}")
     # plt.show()
 
+    # return chart_file_path
+
+static_file_dir = pathlib.Path(__file__).parent.joinpath("static")
+static_file_dir.mkdir(parents=True, exist_ok=True)
+chart_file_path = static_file_dir.joinpath("day_ahead_chart.png")
 
 if __name__ == "__main__":
     create_chart()
