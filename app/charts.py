@@ -86,7 +86,7 @@ def create_chart():
 
     # plt.xkcd()
     plt.rc("xtick", labelsize=8)
-    plt.xticks(rotation=65)
+    plt.xticks(rotation=90)
     plt.bar(x, y)
     plt.title(chart_title.chart_title())
     plt.xlabel("Hour")
