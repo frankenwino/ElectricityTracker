@@ -1,8 +1,9 @@
-from flask import Flask
+from flask import Flask, url_for
 from datetime import datetime
 from flask import render_template
 import database
 from flask_sqlalchemy import SQLAlchemy
+from charts import chart_file_path
 
 app = Flask(__name__)
 # app.config ['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///electricity.db'
@@ -10,7 +11,7 @@ app = Flask(__name__)
 
 @app.route("/")
 def home():
-    return "Hello Flask"
+    return render_template("index.html", chart_image=url_for("static", filename="day_ahead_chart.png"))
 
 
 @app.route("/hello/<name>")
@@ -33,3 +34,7 @@ def intraday():
     l = [r1, r2, r3]
 
     return render_template("intraday.html", table_data=l, table_title="Intraday Prices")
+
+@app.route("/chart")
+def chart():
+    return render_template("index.html", chart_image=url_for("static", filename="day_ahead_chart.png"))
