@@ -5,7 +5,7 @@ from sqlalchemy import text
 from matplotlib import pyplot as plt
 import utils
 from pprint import pprint
-from datetime import datetime
+from datetime import datetime, timedelta
 import pathlib
 
 
@@ -34,6 +34,15 @@ class DateTimeText:
 
         return dmt_text
 
+    def x_axis_text(self):
+        add_one_hour = self.start_date_time_obj + timedelta(hours=1)
+        added_hour = add_one_hour.strftime("%H")
+        # print(added_hour)
+        dmt_text = self.start_date_time_obj.strftime("%-d %b %H-")
+        dmt_text = f"{dmt_text}{added_hour}"
+
+        return dmt_text
+
 
 class ChartTitle(DateTimeText):
     def __init__(self, start: str, end: str):
@@ -43,7 +52,7 @@ class ChartTitle(DateTimeText):
         self.end_date_time_obj = datetime.strptime(self.end_hour, "%Y-%m-%d-%H")
 
     def end_date_text(self):
-        mt_text = self.end_date_time_obj.strftime("%-d %b %H:%M")
+        mt_text = self.end_date_time_obj.strftime("%-d %b %H:59")
 
         return mt_text
 
@@ -68,16 +77,11 @@ def data_from_now():
 
 
 def create_chart():
-    # chart_file_path = pathlib.Path(__file__).parent.joinpath("day_ahead_chart.png")
     dates, start_hours, price = data_from_now()
-
     start_hours_text = []
     for start_hour in start_hours:
         ct = DateTimeText(start_hour)
-        start_hours_text.append(ct.day_month_time_text())
-
-    # start_hours_text = [ChartText(start_hour) for start_hour in start_hours]
-
+        start_hours_text.append(ct.x_axis_text())
     x = start_hours_text
     y = price
 
@@ -96,7 +100,6 @@ def create_chart():
     utils.print_message(f"Created day ahead chart {chart_file_path}")
     # plt.show()
 
-    # return chart_file_path
 
 static_file_dir = pathlib.Path(__file__).parent.joinpath("static")
 static_file_dir.mkdir(parents=True, exist_ok=True)
@@ -104,7 +107,7 @@ chart_file_path = static_file_dir.joinpath("day_ahead_chart.png")
 
 if __name__ == "__main__":
     create_chart()
-    # ct = ChartText("2022-12-04-1")
+    # ct = DateTimeText("2022-12-04-23")
     # print(ct.start_date_time_obj)
     # print(ct.time_text())
     # print(ct.date_text())
