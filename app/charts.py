@@ -3,6 +3,7 @@ import database
 import sqlalchemy as db
 from sqlalchemy import text
 from matplotlib import pyplot as plt
+from matplotlib import style
 import utils
 from pprint import pprint
 from datetime import datetime, timedelta
@@ -89,6 +90,9 @@ def create_chart():
     chart_title = ChartTitle(start=start_hours[0], end=start_hours[-1])
 
     # plt.xkcd()
+    # for s in plt.style.available:
+    # print(s)
+    plt.style.use("seaborn-v0_8-poster")
     plt.rc("xtick", labelsize=8)
     plt.xticks(rotation=90)
     plt.bar(x, y)
@@ -98,6 +102,7 @@ def create_chart():
     plt.tight_layout()
     plt.savefig(str(chart_file_path))
     utils.print_message(f"Created day ahead chart {chart_file_path}")
+        
     # plt.show()
 
 
