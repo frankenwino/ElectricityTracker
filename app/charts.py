@@ -91,8 +91,8 @@ def create_chart():
 
     # plt.xkcd()
     # for s in plt.style.available:
-    # print(s)
-    plt.style.use("seaborn-v0_8-poster")
+    #     print(s)
+    plt.style.use("seaborn-v0_8")
     plt.rc("xtick", labelsize=8)
     plt.xticks(rotation=90)
     plt.bar(x, y)
