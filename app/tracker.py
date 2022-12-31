@@ -308,6 +308,6 @@ class ElTracker:
 e = ElTracker(
     region_zone="SE3",
     base_url="https://www.nordpoolgroup.com/en/Market-data1/Dayahead/Area-Prices/SE",
-    hide_browser=False
+    hide_browser=True
 )
 e.main(check_website=True)
