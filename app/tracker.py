@@ -8,6 +8,7 @@ from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import Select
+import selenium.common.exceptions
 import pathlib
 import unicodedata
 from datetime import date, datetime, timedelta
@@ -105,11 +106,15 @@ class ElTracker:
         ).click()
         utils.print_message("Lower notification should gone")
         utils.do_wait(page_wait, page_wait_message)
-        driver.find_element(
-            By.CLASS_NAME, "svg.img-close.notificationAcknowledge"
-        ).click()
-        utils.print_message("Upper notification should be gone")
-
+        
+        try:
+            driver.find_element(
+                By.CLASS_NAME, "svg.img-close.notificationAcknowledge"
+            ).click()
+            utils.print_message("Upper notification should be gone")
+        except selenium.common.exceptions.NoSuchElementException as e:
+            utils.print_message(f"{type(e)} - {str(e)}")
+            
         # Choose region zone e.g. "SE3"
         utils.do_wait(2, page_wait_message)
         driver.find_element(By.LINK_TEXT, self.region_zone).click()
@@ -308,6 +313,6 @@ class ElTracker:
 e = ElTracker(
     region_zone="SE3",
     base_url="https://www.nordpoolgroup.com/en/Market-data1/Dayahead/Area-Prices/SE",
-    hide_browser=True
+    hide_browser=False
 )
 e.main(check_website=True)
